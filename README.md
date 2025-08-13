@@ -38,6 +38,10 @@ This project is a web application for monitoring and controlling a set of sensor
 
 ---
 
+## Database Model
+
+![Database Model](static/db_model.png)
+
 ## ⚙️ Setup instructions
 
 Install MySQL server if you do not already have one.
@@ -80,3 +84,8 @@ Finally run the application.
 ```bash
 python3 app.py
 ```
+## Application preview
+![Application preview](static/1.png)
+![Application preview](static/2.png)
+![Application preview](static/3.png)
+![Application preview](static/4.png)
