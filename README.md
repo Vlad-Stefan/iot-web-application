@@ -42,6 +42,8 @@ This project is a web application for monitoring and controlling a set of sensor
 
 ![Database Model](static/db_model.png)
 
+>**Note** The database model is stored in `model.mwb`. You can import it into MySQL Workbench.
+
 ## ⚙️ Setup instructions
 
 Install MySQL server if you do not already have one.
