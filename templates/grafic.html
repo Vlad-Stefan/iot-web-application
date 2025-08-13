@@ -1,0 +1,123 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <h1><strong>Grafic LAN Controller</strong></h1>
+
+    <div style="text-align: center; margin: 20px;">
+        <input id="startDate" placeholder="De la" style="margin-right: 10px;" />
+        <input id="endDate" placeholder="Până la" style="margin-right: 10px;" />
+        <button onclick="deseneazaGrafic()">Generează grafic</button>
+    </div>
+    
+    <canvas id="graficTemperatura" width="1000" height="300" style="display:block; margin:auto; background-color: white;"></canvas>
+
+    <script>
+    flatpickr("#startDate", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });
+
+    flatpickr("#endDate", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });
+</script>
+
+    <script>
+
+        function localToUTCString(localDateString) {
+            if (!localDateString) {
+                return null;
+            }
+            const localDate = new Date(localDateString.replace(" ", "T"));
+            return localDate.toISOString().slice(0, 19).replace('T', ' ');
+        }
+
+
+        async function deseneazaGrafic() {
+            const startLocal = document.getElementById("startDate").value;
+            const endLocal = document.getElementById("endDate").value;
+
+            if (!startLocal || !endLocal) {
+                return;
+            }
+
+            const start = localToUTCString(startLocal);
+            const end = localToUTCString(endLocal);
+
+            const res = await fetch(`/api/valori_grafic?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`);
+            const data = await res.json();
+            console.log(data);
+
+            const valori = data.map(item => ({
+                x: new Date(item.timestamp ),  
+                y: item.valoare
+            }));
+
+
+
+            const ctx = document.getElementById('graficTemperatura').getContext('2d');
+
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
+            }
+
+            window.chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Temperatură (°C)',
+                        data: valori,
+                        borderColor: 'red',
+                        backgroundColor: 'red',
+                        borderWidth: 2,
+                        tension: 0.2,
+                        pointRadius: 3
+
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'black'
+                            }
+                        }
+                    },
+                    scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    tooltipFormat: 'dd/MM/yyyy HH:mm',
+                                    displayFormats: {
+                                        minute: 'dd/MM/yyyy HH:mm',
+                                        hour: 'dd/MM/yyyy HH:mm',
+                                        day: 'dd/MM/yyyy',
+                                        month: 'dd/MM/yyyy',
+                                        year: 'dd/MM/yyyy'
+
+                                    }
+                                },
+                                ticks: {
+                                    color: 'black',
+                                    maxRotation: 0,
+                                    autoSkip: true,
+                                    maxTicksLimit: 6
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'black'
+                                }
+                            }
+                        }
+                }
+            });
+        }
+
+        deseneazaGrafic();
+    </script>
+
+{% endblock %}

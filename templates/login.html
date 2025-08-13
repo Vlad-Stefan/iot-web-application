@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <h2>Login</h2>
+  <form method="POST">
+    <label>Email:</label><br>
+    <input type="text" name="email"><br>
+    <label>Parolă:</label><br>
+    <input type="password" name="password"><br><br>
+    <input type="submit" value="Autentificare">
+  </form>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p style="color:red;">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
+  
+{% endblock %}

@@ -1,0 +1,17 @@
+<nav>
+    <a href="/"><i class="fa fa-home"></i> Acasă</a>
+
+    {% if current_user.is_authenticated %}
+        {% if current_user.role_id in [1, 2] %}
+            | <a href="/grafic"><i class="fa fa-bar-chart"></i> Grafic</a>
+        {% endif %}
+
+        {% if current_user.role_id == 1 %}
+            | <a href="/valori"><i class="fa fa-database"></i> Valori primite</a>
+        {% endif %}
+
+        | <a href="/logout"><i class="fa fa-sign-out"></i> Logout</a>
+    {% else %}
+        | <a href="/login"><i class="fa fa-sign-in"></i> Login</a>
+    {% endif %}
+</nav>

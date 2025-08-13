@@ -1,0 +1,24 @@
+{
+    "controllers" :{
+        "lan_controller": {
+            "schema": "http",
+            "host": "<host>",
+            "port": "80",
+            "status_path": "/xml/ix.xml",
+            "out_on_path": "/outs.cgi?out0=1",
+            "out_off_path": "/outs.cgi?out0=0"
+        },
+
+        "ET-7017": {
+            "host": "<host>",
+            "port": 502
+        },
+        "ET-7052": {
+            "host": "<host>",
+            "port": 502
+        },
+
+        "digital_input": "1",
+        "digital_output": "1"
+    }
+}

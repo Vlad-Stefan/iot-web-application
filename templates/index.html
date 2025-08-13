@@ -1,0 +1,323 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container-flex">
+
+        <div class="left-panel">
+    
+            <h1><strong>LAN Controller</strong></h1>
+            <p></p>
+            <br>
+            <h>Temperatura în timp real</h>
+            <p><strong id="temp">--</strong> °C <i id="temp-icon-left" class="fa fa-thermometer-empty"></i></p>
+
+            <h>Temperatura Procesor timp real</h>
+            <p><strong id="tempP">--</strong> °C</p>
+
+            <h>Tensiune în timp real</h>
+            <p><strong id="ten">--</strong> V <i id="ten-icon-left" class="fa fa-flash"></i></p>
+
+            <h>Uptime</h>
+            <p><strong id="uptime">--</strong></p>
+
+            <h>Data curenta</h>
+            <p><strong id="curenttime">--</strong></p>
+
+            <h>Output0</h>
+            <button class="on-button" id="on-button">ON</button>
+            <button class="off-button" id="off-button">OFF</button>
+
+            <br>
+            <p></p>
+            <h1><strong>ET-7017 / ET-7025</strong></h1>
+            <br>
+
+            <h>Senzor lumina</h>
+            <p><strong id="ET7017">--</strong> V <i id="light-icon-left" class="fa fa-sun-o"></i></i></p>
+
+            <h>Led Controller</h>
+            <br>
+            <button class="ON-button" id="ON-button">Aprinde LED</button>
+            <button class="ON-button" id="OFF-button">Stinge LED</button>
+
+        </div>
+
+        <div class="right-panel">
+            <div class="schema-wrapper">
+                
+                <?xml version="1.0" ?>
+                <svg xmlns="http://www.w3.org/2000/svg" width="900" height="600">
+                    <rect id="lan-controller" x="105" y="75" width="150" height="90" fill="limegreen" stroke="black"/>
+                    <text x="120" y="127.5" fill="black">LAN V3.5</text>
+
+                    <line x1="255" y1="120" x2="300" y2="120" stroke="black"/>
+                    <text x="290" y="153.5" fill="black">Temp</text>
+                    <!-- temperatura   <circle id="temp-sensor" cx="285" cy="120" r="12" fill="none" stroke="orange"/> -->
+
+                    <line x1="105" y1="120" x2="60" y2="120" stroke="black"/>
+                    <text x="32.5" y="97.5" fill="black">Ten</text>
+
+                    <polyline points="195,165 195,195 240,195" stroke="black" fill="none"/>
+                    <text x="225" y="230" fill="black">Output0</text>
+
+                    <rect id="et-7017" x="450" y="45" width="210" height="90" fill="gray" stroke="black"/>
+                    <text x="465" y="97.5" fill="white">ET-7017</text>
+
+                    <line x1="450" y1="90" x2="405" y2="90" stroke="black"/>
+                    <!-- lumina <circle id="light-sensor" cx="390" cy="90" r="12" fill="none" stroke="gold"/> -->
+                    <text x="352.5" y="67.5" fill="black">Lumină</text>
+
+                    <rect id="et-7052" x="450" y="195" width="210" height="90" fill="gray" stroke="black"/>
+                    <text x="465" y="247.5" fill="white">ET-7052</text>
+
+                    <line x1="660" y1="240" x2="705" y2="240" stroke="black"/>
+                    <!-- bec <circle id="led-do1" cx="720" cy="240" r="12" fill="none" stroke="red"/> -->
+                    <text x="735" y="247.5" fill="black">LED DO1</text>
+                </svg>
+
+                <!-- Iconițe poziționate relativ la imagine -->
+                <i id="temp-icon-right" class="fa fa-thermometer-empty icon-overlay" style="left: 310px; top: 120px;" title="Temperatură"></i>
+                <i id="ten-icon-right" class="fa fa-flash icon-overlay" style="left: 50px; top: 120px;" title="Tensiune"></i>
+                <i id="light-icon-right" class="fa fa-sun-o icon-overlay" style="left: 390px; top: 90px;" title="Lumina"></i>
+                <i id="led-icon-right" class="fa fa-lightbulb-o icon-overlay" style="left: 715px; top: 240px;" title="LED On/Off"></i>
+                <i id="output-icon-right" class="fa fa-power-off icon-overlay" style="left: 255px; top: 195px;" title="Output0"></i>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        async function updateOut0() {
+            try{
+                const res = await fetch('/api/valori_senzori');
+                const data = await res.json();
+
+                const iconElem = document.getElementById('output-icon-right');
+                if (iconElem) iconElem.style.color = data.out0 ? "green" : "red";
+            }catch (error) {
+                console.error("Eroare la updateOut0:", error);
+            }
+        }
+        async function Porneste() {
+            try{
+                const res = await fetch('/api/set_out0_on', {method: 'POST'});
+                const data = await res.json();
+
+                const iconElem = document.getElementById('output-icon-right');
+                if (iconElem) iconElem.style.color = data.out0 ? "green" : "red";
+
+                document.getElementById('on-button').style.backgroundColor = "green";
+                document.getElementById('off-button').style.backgroundColor = "white";
+                
+            }catch (error) {
+                console.error("Eroare la Porneste:", error);
+            }
+        }
+
+        async function Opreste() {
+            try{
+                const res = await fetch('/api/set_out0_off', {method: 'POST'});
+                const data = await res.json();
+
+                const iconElem = document.getElementById('output-icon-right');
+                if (iconElem) iconElem.style.color = data.out0 ? "green" : "red";
+                
+                document.getElementById('off-button').style.backgroundColor = "red";
+                document.getElementById('on-button').style.backgroundColor = "white";
+                
+            }catch (error) {
+               console.error("Eroare la Opreste:", error);
+            }
+        }
+
+        document.getElementById('on-button').addEventListener('click', Porneste);
+        document.getElementById('off-button').addEventListener('click', Opreste);
+
+        async function updateBec() {
+            try{
+                const res = await fetch('/api/valori_senzori');
+                const data = await res.json();
+
+                const iconElem = document.getElementById('led-icon-right');
+                if (iconElem) iconElem.style.color = data.ET7052 ? "green" : "red";
+            }catch (error) {
+                console.error("Eroare la get_ET7052:", error);
+            }
+        }
+
+        async function LEDon(){
+            try{
+                const res = await fetch('/api/ET7052_ON', {method: 'POST'});
+                const data = await res.json();
+
+                const iconElem = document.getElementById('led-icon-right');
+                iconElem.style.color = "green";
+                
+            }catch (error) {
+                 console.error("Eroare la LEDon:", error);
+            }
+        }
+
+        async function LEDoff(){
+            try{
+                const res = await fetch('/api/ET7052_OFF', {method: 'POST'});
+                const data = await res.json();
+
+                const iconElem = document.getElementById('led-icon-right');
+                iconElem.style.color = "red";
+                
+            }catch (error) {
+                console.error("Eroare la LEDoff:", error);
+            }
+        }
+
+        document.getElementById('ON-button').addEventListener('click', LEDon);
+        document.getElementById('OFF-button').addEventListener('click', LEDoff);
+
+        async function updateTemp() {
+            try {
+                const res = await fetch('/api/valori_senzori');
+                const data = await res.json();
+                const temp = data.temperatura;
+
+                const tempElem = document.getElementById('temp');
+                const iconElem1 = document.getElementById('temp-icon-left');
+                const iconElem2 = document.getElementById('temp-icon-right');
+
+                tempElem.innerText = temp ?? "Serverul nu raspunde";
+
+                 if (temp >= 30) {
+                    iconElem1.className = "fa fa-thermometer-full";
+                    iconElem1.style.color = "red";
+                    iconElem2.className = "fa fa-thermometer-full icon-overlay";
+                    iconElem2.style.color = "red";
+                } else if (temp >= 20) {
+                    iconElem1.className = "fa fa-thermometer-half";
+                    iconElem1.style.color = "orange";
+                    iconElem2.className = "fa fa-thermometer-half icon-overlay";
+                    iconElem2.style.color = "orange";
+                } else {
+                    iconElem1.className = "fa fa-thermometer-empty";
+                    iconElem1.style.color = "blue";
+                    iconElem2.className = "fa fa-thermometer-empty icon-overlay";
+                    iconElem2.style.color = "blue";
+                }
+            } catch (e) {
+                document.getElementById('temp').innerText = "Serverul nu raspunde";
+            }
+        }
+
+        async function updateTempProc() {
+            try{
+                const res = await fetch('/api/valori_senzori');
+                const data = await res.json();
+                document.getElementById('tempP').innerText = data.temperaturaProcesor ?? "Serverul nu raspunde";
+            } catch (e) {
+                document.getElementById('tempP').innerText = "Serverul nu raspunde";
+            }
+        }
+
+        async function updateTen(){
+            try{
+                const res = await fetch('/api/valori_senzori');
+                const data = await res.json();
+                const tensiune = data.tensiune;
+
+                const tensiuneElem = document.getElementById('ten');
+                const iconElem1 = document.getElementById('ten-icon-left');
+                const iconElem2 = document.getElementById('ten-icon-right');
+
+                tensiuneElem.innerText = tensiune ?? "Serverul nu raspunde";
+
+                if (tensiune >= 30) {
+                    iconElem1.style.color = "red";
+                    iconElem2.style.color = "red";
+                } else if (tensiune >= 20) {
+                    iconElem1.style.color = "orange";
+                    iconElem2.style.color = "orange";
+                } else {
+                    iconElem1.style.color = "blue";
+                    iconElem2.style.color = "blue";
+                }
+            } catch (e) {
+                document.getElementById('ten').innerText = "Serverul nu raspunde";
+            }
+        }
+
+        async function updateUpTime(){
+            try{
+                const res = await fetch('/api/valori_senzori');
+                const data = await res.json();
+                document.getElementById('uptime').innerText = data.uptime ?? "Serverul nu raspunde";
+            } catch (e) {
+                document.getElementById('uptime').innerText = "Serverul nu raspunde";
+            }
+        }
+
+          async function updateCurentTime(){
+            try{
+                const res = await fetch('/api/valori_senzori');
+                const data = await res.json();
+                document.getElementById('curenttime').innerText = data.curentTime ?? "Serverul nu raspunde";
+            } catch (e) {
+                document.getElementById('curenttime').innerText = "Serverul nu raspunde";
+            }
+        }
+
+        async function updateET7017(){
+            try{
+                const res = await fetch('/api/valori_senzori');
+                const data = await res.json();
+                const light = data.ET7017;
+
+                const lightElem = document.getElementById('ET7017');
+                const iconElem1 = document.getElementById('light-icon-left');
+                const iconElem2 = document.getElementById('light-icon-right');
+
+                lightElem.innerText = light ?? "Serverul nu raspunde";
+
+                 if (light <= 4) {
+                    iconElem1.className = "fa fa-sun-o";
+                    iconElem1.style.color = "orange";
+                    iconElem2.className = "fa fa-sun-o icon-overlay";
+                    iconElem2.style.color = "orange";
+                } else {
+                    iconElem1.className = "fa fa-moon-o";
+                    iconElem1.style.color = "white";
+                    iconElem2.className = "fa fa-moon-o icon-overlay";
+                    iconElem2.style.color = "white";
+                }
+
+                document.getElementById('ET7017').innerText = light ?? "Serverul nu raspunde";
+            } catch (e) {
+                document.getElementById('ET7017').innerText = "Serverul nu raspunde";
+            }
+        }
+
+        async function dictionar(){
+            const res = await fetch('/api/valori_senzori');
+            const data = await res.json();
+            console.log(data);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateOut0();
+            updateBec();
+        });
+
+        function updateAll(){
+            
+            updateTemp();
+            updateTempProc();
+            updateTen();
+            updateUpTime();
+            updateCurentTime();
+            updateET7017();
+            dictionar();
+        }
+        updateAll();
+        setInterval(updateAll, 1000);
+    </script>
+{% endblock %}

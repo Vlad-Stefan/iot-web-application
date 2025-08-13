@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Date primite de la LAN Controller</h1>
+    <ul id="valori-lista"><li><i class="fa fa-spinner fa-spin"></i> Se încarcă...</li></ul>
+
+    <script>
+    async function incarcaValori() {
+        try {
+            const res = await fetch('/api/valori_json');
+            const data = await res.json();
+            const lista = document.getElementById('valori-lista');
+            lista.innerHTML = '';
+
+            data.forEach(v => {
+                const icon = v.valoare >= 30
+                    ? '<i class="fa fa-thermometer-full" style="color:red;"></i>'
+                    : '<i class="fa fa-thermometer-half" style="color:orange;"></i>';
+                const localDate = new Date(v.timestamp).toLocaleString();
+                const li = document.createElement('li');
+                li.innerHTML = `${icon} ${localDate} — <strong>${v.valoare}</strong> °C`;
+                lista.appendChild(li);
+            });
+        } catch (e) {
+            console.error("Eroare:", e);
+        }
+    }
+
+    incarcaValori();
+    setInterval(incarcaValori, 5000);
+    </script>
+
+{% endblock %}

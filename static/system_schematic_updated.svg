@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400">
+  <rect id="lan-controller" x="50" y="50" width="100" height="60" fill="limegreen" stroke="black"/>
+  <text x="60" y="85" fill="black">LAN V3.5</text>
+  <line x1="150" y1="80" x2="180" y2="80" stroke="black"/>
+  <circle id="temp-sensor" cx="190" cy="80" r="8" fill="none" stroke="orange"/>
+  <text x="195" y="85" fill="black">Temp</text>
+  <rect id="et-7017" x="300" y="30" width="140" height="60" fill="gray" stroke="black"/>
+  <text x="310" y="65" fill="white">ET-7017</text>
+  <line x1="300" y1="60" x2="270" y2="60" stroke="black"/>
+  <circle id="light-sensor" cx="260" cy="60" r="8" fill="none" stroke="gold"/>
+  <text x="245" y="50" fill="black">Lumină</text>
+  <rect id="et-7052" x="300" y="130" width="140" height="60" fill="gray" stroke="black"/>
+  <text x="310" y="165" fill="white">ET-7052</text>
+  <line x1="440" y1="160" x2="470" y2="160" stroke="black"/>
+  <circle id="led-do1" cx="480" cy="160" r="8" fill="none" stroke="red"/>
+  <text x="490" y="165" fill="black">LED DO1</text>
+</svg>
